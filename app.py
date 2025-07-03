@@ -8,8 +8,7 @@ st.title("📞 Chase API Subcampaign Lookup")
 
 st.markdown("""
 Upload a CSV file with a **phone** column.  
-The app will query the Chase API for each phone number and output the Subcampaign.  
-If the Subcampaign field is not found, it will show "NOT FOUND".
+The app will query the Chase API for each phone number and output the Subcampaign.
 """)
 
 uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
@@ -32,9 +31,6 @@ def lookup_subcampaign(phone):
     except Exception as e:
         return f"ERROR: {e}"
 
-    # DEBUG: Show the raw text response in Streamlit
-    st.write("Raw API response for", phone, ":", text_data)
-
     # Find the Subcampaign field in the text
     subcampaign = "NOT FOUND"
     pairs = text_data.split('","')
@@ -52,14 +48,12 @@ if uploaded_file is not None:
         st.error("The CSV must contain a column named 'phone'.")
     else:
         if st.button("Run Lookup"):
-            st.info("Processing lookups... This may take a minute.")
             results = []
             for phone in df['phone']:
                 sub = lookup_subcampaign(str(phone))
                 results.append({"phone": phone, "subcampaign": sub})
             results_df = pd.DataFrame(results)
-            st.success("Lookups completed!")
-            st.dataframe(results_df)
+            st.success("Lookups completed! Click below to download your results.")
             csv_data = results_df.to_csv(index=False).encode("utf-8")
             st.download_button(
                 label="📥 Download Results as CSV",
